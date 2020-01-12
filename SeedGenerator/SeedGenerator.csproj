@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PatientManagement\PatientManagement.csproj" />
+    <ProjectReference Include="..\Storage\Storage.csproj" />
+    <ProjectReference Include="..\Framework\Framework.csproj" />
   </ItemGroup>
 
 </Project>

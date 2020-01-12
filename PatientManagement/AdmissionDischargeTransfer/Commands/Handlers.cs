@@ -5,7 +5,7 @@ namespace PatientManagement.AdmissionDischargeTransfer.Commands
 {
     public class Handlers : CommandHandler
     {
-        public Handlers(AggregateRepository repository)
+        public Handlers(IAggregateRepository repository)
         {
             Register<AdmitPatient>(async c =>
             {

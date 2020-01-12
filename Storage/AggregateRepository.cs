@@ -7,7 +7,7 @@ using PatientManagement.Framework.Helpers;
 
 namespace PatientManagement.Framework
 {
-    public class AggregateRepository
+    public class AggregateRepository : IAggregateRepository
     {
         readonly IEventStoreConnection _connection;
 
