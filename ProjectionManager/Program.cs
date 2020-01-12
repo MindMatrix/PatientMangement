@@ -4,11 +4,12 @@ using System.Linq;
 using System.Net;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
+using MediatR;
 using StructureMap;
 
 namespace ProjectionManager
 {
-    internal class Program
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -25,15 +26,18 @@ namespace ProjectionManager
                 cfg.For<IEventStoreConnection>().Use(eventStoreConnection);
                 cfg.For<ConnectionFactory>().Use(connectionFactory);
                 cfg.For<ProjectionManager>().Use<ProjectionManager>();
+                cfg.For<ServiceFactory>().Use<ServiceFactory>(ctx => ctx.GetInstance);
+                cfg.For<IMediator>().Use<Mediator>();
             });
 
-            foreach (var it in typeof(Program).Assembly.GetExportedTypes().Where(x => x.GetInterface(typeof(IProjection).FullName) != null))
-                Console.WriteLine(it);
-
-            foreach (var it in container.GetAllInstances<IProjection>())
-                Console.WriteLine(it);
 
             var projectionManager = container.GetInstance<ProjectionManager>();
+            Console.WriteLine(container.WhatDoIHave());
+
+            foreach (var it in container.GetAllInstances<IProjection>())
+            {
+                Console.WriteLine($"{it.GetType().Name}");
+            }
 
             // var projections = new List<IProjection>
             // {

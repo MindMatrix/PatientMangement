@@ -1,11 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using PatientManagement.AdmissionDischargeTransfer;
-
-namespace ProjectionManager
+﻿namespace ProjectionManager
 {
-    internal class PatientDemographicProjection : Projection
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using PatientManagement.AdmissionDischargeTransfer;
+
+    public interface IProjection<T>
+    {
+        Task Handle(T e);
+    }
+
+    public class TestProjection : IProjection<PatientAdmitted>
+    {
+        public Task Handle(PatientAdmitted e)
+        {
+            Console.WriteLine($"Whoa! {e.PatientId}");
+            return Task.CompletedTask;
+        }
+    }
+
+    // public abstract class ProjectionWrapper : IProjection
+    // {
+    //     public abstract bool CanHandle(string eventType);
+
+    //     public abstract void Handle(string eventType, object e);
+    // }
+
+    public class ProjectionWrapper<T> : IProjection
+    {
+        private readonly string _eventType;
+        private readonly IProjection<T> _handler;
+        public ProjectionWrapper(IProjection<T> handler)
+        {
+            _eventType = typeof(T).Name;
+            _handler = handler;
+        }
+
+        public bool CanHandle(string eventType) => _eventType == eventType;
+
+        public void Handle(string eventType, object e) => _handler.Handle((T)e).Wait();
+    }
+
+
+
+
+    // public class Projection<T> : IProjection
+    // {
+    //     private readonly IProjection<T> _handler;
+
+    //     public Projection(ProjectionManager projectionManager, IProjection<T> handler)
+    //     {
+    //         _handler = handler;
+    //     }
+
+    //     protected void When<T>(Action<T> when)
+    //     {
+    //         _handlers.Add(new EventHandler { EventType = typeof(T).Name, Handler = e => when((T)e) });
+    //     }
+
+    //     void IProjection.Handle(string eventType, object e)
+    //     {
+    //         _handlers
+    //             .Where(h => h.EventType == eventType)
+    //             .ToList()
+    //             .ForEach(h => h.Handler(e));
+    //     }
+
+    //     bool IProjection.CanHandle(string eventType)
+    //     {
+    //         return _handlers.Any(h => h.EventType == eventType);
+    //     }
+    // }
+
+
+
+    public class PatientDemographicProjection : Projection
     {
         public PatientDemographicProjection(ConnectionFactory connectionFactory)
         {
@@ -19,7 +89,7 @@ namespace ProjectionManager
 
                     if (range == null)
                     {
-                        session.Store(new Range {Id = rangeLookup.Name, Count = 1});
+                        session.Store(new Range { Id = rangeLookup.Name, Count = 1 });
                         Console.WriteLine($"{rangeLookup.Name}: 1");
                     }
                     else

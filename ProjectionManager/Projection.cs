@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace ProjectionManager
 {
-    class Projection : IProjection
+    public abstract class Projection : IProjection
     {
-        readonly List<EventHandler> _handlers = new List<EventHandler>();
+        private readonly List<EventHandler> _handlers = new List<EventHandler>();
 
         protected void When<T>(Action<T> when)
         {
@@ -15,10 +15,9 @@ namespace ProjectionManager
 
         void IProjection.Handle(string eventType, object e)
         {
-            _handlers
-                .Where(h => h.EventType == eventType)
-                .ToList()
-                .ForEach(h => h.Handler(e));
+            foreach (var it in _handlers)
+                if (it.EventType == eventType)
+                    it.Handler(e);
         }
 
         bool IProjection.CanHandle(string eventType)

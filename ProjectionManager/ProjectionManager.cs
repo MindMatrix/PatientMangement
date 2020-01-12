@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using EventStore.ClientAPI;
+using MediatR;
 using PatientManagement.Framework.Helpers;
 
 namespace ProjectionManager
 {
-    class ProjectionManager
+    public class ProjectionManager
     {
         readonly IEventStoreConnection _eventStoreConnection;
 
@@ -17,7 +18,8 @@ namespace ProjectionManager
         public ProjectionManager(
             IEventStoreConnection eventStoreConnection,
             ConnectionFactory connectionFactory,
-            IEnumerable<IProjection> projections)
+            IEnumerable<IProjection> projections
+            )
         {
             _projections = projections.ToList();
             _eventStoreConnection = eventStoreConnection;

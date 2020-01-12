@@ -4,7 +4,7 @@ using Raven.Client.Documents.Session;
 
 namespace ProjectionManager
 {
-    internal class ConnectionFactory
+    public class ConnectionFactory
     {
         private readonly IDocumentStore _store;
 
