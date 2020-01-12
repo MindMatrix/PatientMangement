@@ -1,5 +1,6 @@
 ﻿using Raven.Client;
-using Raven.Client.Document;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 
 namespace ProjectionManager
 {
@@ -11,10 +12,9 @@ namespace ProjectionManager
         {
             _store = new DocumentStore
             {
-                Url = "http://localhost:8080/",
-                DefaultDatabase = database
+                Urls = new string[] { "http://localhost:8080/" },
+                Database = database
             };
-
             _store.Initialize();
         }
 

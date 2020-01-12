@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using EventStore.ClientAPI;
 using PatientManagement.Framework.Helpers;
 
@@ -16,9 +17,9 @@ namespace ProjectionManager
         public ProjectionManager(
             IEventStoreConnection eventStoreConnection,
             ConnectionFactory connectionFactory,
-            List<IProjection> projections)
+            IEnumerable<IProjection> projections)
         {
-            _projections = projections;
+            _projections = projections.ToList();
             _eventStoreConnection = eventStoreConnection;
             _connectionFactory = connectionFactory;
         }

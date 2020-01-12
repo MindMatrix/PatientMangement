@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
+using StructureMap;
 
 namespace ProjectionManager
 {
@@ -14,16 +16,35 @@ namespace ProjectionManager
 
             var connectionFactory = new ConnectionFactory("PatientManagement");
 
-            var projections = new List<IProjection>
-            {
-                new WardViewProjection(connectionFactory),
-                new PatientDemographicProjection(connectionFactory)
-            };
+            var registry = new Registry();
+            registry.IncludeRegistry<ProjectionRegistry>();
 
-            var projectionManager = new ProjectionManager(
-                eventStoreConnection,
-                connectionFactory,
-                projections);
+            var container = new Container(registry);
+            container.Configure(cfg =>
+            {
+                cfg.For<IEventStoreConnection>().Use(eventStoreConnection);
+                cfg.For<ConnectionFactory>().Use(connectionFactory);
+                cfg.For<ProjectionManager>().Use<ProjectionManager>();
+            });
+
+            foreach (var it in typeof(Program).Assembly.GetExportedTypes().Where(x => x.GetInterface(typeof(IProjection).FullName) != null))
+                Console.WriteLine(it);
+
+            foreach (var it in container.GetAllInstances<IProjection>())
+                Console.WriteLine(it);
+
+            var projectionManager = container.GetInstance<ProjectionManager>();
+
+            // var projections = new List<IProjection>
+            // {
+            //     new WardViewProjection(connectionFactory),
+            //     new PatientDemographicProjection(connectionFactory)
+            // };
+
+            // var projectionManager = new ProjectionManager(
+            //     eventStoreConnection,
+            //     connectionFactory,
+            //     projections);
 
             projectionManager.Start();
 
